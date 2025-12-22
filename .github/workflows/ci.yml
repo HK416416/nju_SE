@@ -44,9 +44,11 @@ jobs:
           libgmock-dev
         echo "Dependencies installed successfully"
 
-    # 🔥 关键：彻底清理旧构建目录，避免 gcno/gcda 与源码不一致
-    - name: Clean Build Directory
+    # 🔥 关键：彻底清除所有可能的 gcov 残留文件（项目级清理）
+    - name: Clean All GCOV Artifacts and Build Directory
       run: |
+        find . -name "*.gcda" -delete
+        find . -name "*.gcno" -delete
         rm -rf build/
         mkdir build
 
@@ -95,28 +97,33 @@ jobs:
     - name: Generate Coverage Report
       if: env.COVERAGE == 'true'
       run: |
-        cd build
-        echo "Generating coverage report..."
+        echo "Generating coverage report from build/ directory only..."
 
-        # 捕获原始覆盖率数据
-        lcov --capture --directory . --output-file coverage.info --rc lcov_branch_coverage=1
+        # 📌 只从 build/ 目录采集覆盖率数据（避免外部残留干扰）
+        lcov --capture \
+             --directory build \
+             --output-file build/coverage.info \
+             --rc branch_coverage=1
 
-        # 过滤掉系统头文件、测试代码、依赖库等非业务代码
-        lcov --remove coverage.info \
-          '/usr/*' \
-          '/opt/*' \
-          '*/tests/*' \
-          '*/_deps/*' \
-          '*/googletest/*' \
-          '*/CMakeFiles/*' \
-          '*/main.cpp' \
-          --output-file coverage_filtered.info --rc lcov_branch_coverage=1
+        # 过滤掉非业务代码
+        lcov --remove build/coverage.info \
+             '/usr/*' \
+             '/opt/*' \
+             '*/tests/*' \
+             '*/_deps/*' \
+             '*/googletest/*' \
+             '*/CMakeFiles/*' \
+             '*/main.cpp' \
+             --output-file build/coverage_filtered.info \
+             --rc branch_coverage=1
 
-        # 生成 HTML 可视化报告
-        genhtml coverage_filtered.info --output-directory coverage_report --branch-coverage
+        # 生成 HTML 报告
+        genhtml build/coverage_filtered.info \
+                --output-directory build/coverage_report \
+                --branch-coverage
 
-        # 打印覆盖率摘要
-        lcov --list coverage_filtered.info --rc lcov_branch_coverage=1
+        # 打印摘要
+        lcov --list build/coverage_filtered.info --rc branch_coverage=1
 
         echo "Coverage report generated in build/coverage_report/"
 
@@ -164,11 +171,10 @@ jobs:
         
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "#### 📁 生成文件" >> $GITHUB_STEP_SUMMARY
-        echo "测试完成后生成的文件可以在 **Artifacts** 中下载：" >> $GITHUB_STEP_SUMMARY
-        echo "1. **ci-artifacts-ubuntu**:" >> $GITHUB_STEP_SUMMARY
-        echo "   - 测试结果 XML 文件" >> $GITHUB_STEP_SUMMARY
-        echo "   - 覆盖率报告（HTML + info）" >> $GITHUB_STEP_SUMMARY
-        echo "   - 可执行二进制文件（bin/ 和 tests/）" >> $GITHUB_STEP_SUMMARY
+        echo "测试完成后生成的文件可在 **Artifacts → ci-artifacts-ubuntu** 中下载：" >> $GITHUB_STEP_SUMMARY
+        echo "- 测试结果 XML" >> $GITHUB_STEP_SUMMARY
+        echo "- 覆盖率报告（HTML）" >> $GITHUB_STEP_SUMMARY
+        echo "- 可执行文件（bin/ 和 tests/）" >> $GITHUB_STEP_SUMMARY
         
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "---" >> $GITHUB_STEP_SUMMARY
