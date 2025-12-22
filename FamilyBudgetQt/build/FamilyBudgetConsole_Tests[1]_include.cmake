@@ -1,5 +1,0 @@
-if(EXISTS "E:/c++_work/FamilyBudgetQt/build/FamilyBudgetConsole_Tests[1]_tests.cmake")
-  include("E:/c++_work/FamilyBudgetQt/build/FamilyBudgetConsole_Tests[1]_tests.cmake")
-else()
-  add_test(FamilyBudgetConsole_Tests_NOT_BUILT FamilyBudgetConsole_Tests_NOT_BUILT)
-endif()

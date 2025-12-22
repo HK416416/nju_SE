@@ -1,0 +1,195 @@
+name: C++ Family Budget System CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - 'FamilyBudgetQt/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - 'FamilyBudgetQt/**'
+
+env:
+  BUILD_TYPE: Debug
+  COVERAGE: true
+  WORKING_DIR: FamilyBudgetQt  # 重要：设置工作目录
+
+jobs:
+  build-and-test:
+    name: Build and Test on Ubuntu
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Print Environment Information
+      run: |
+        echo "Running on: ${{ runner.os }}"
+        echo "Working directory: $(pwd)"
+        echo "Project directory: ${{ env.WORKING_DIR }}"
+        gcc --version
+        cmake --version
+        make --version
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          make \
+          lcov \
+          libgtest-dev \
+          libgmock-dev
+        echo "Dependencies installed successfully"
+
+    - name: Configure CMake
+      run: |
+        mkdir -p build
+        cd build
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+          -DBUILD_TESTS=ON \
+          -DENABLE_COVERAGE=${{ env.COVERAGE }}
+
+    - name: Build Project
+      run: |
+        cd build
+        make -j$(nproc) VERBOSE=1
+        echo "Build completed successfully"
+        echo "Build contents:"
+        ls -la bin/ || true
+        ls -la tests/ || true
+
+    - name: Run Unit Tests
+      run: |
+        cd build
+        echo "Running unit tests..."
+        if [ -f "tests/FamilyBudgetConsole_UnitTests" ]; then
+          ./tests/FamilyBudgetConsole_UnitTests --gtest_output=xml:unit_test_results.xml
+          TEST_RESULT=$?
+          echo "Unit tests exit code: $TEST_RESULT"
+        else
+          echo "ERROR: Unit test executable not found!"
+          exit 1
+        fi
+
+    - name: Run Integration Tests
+      run: |
+        cd build
+        echo "Running integration tests..."
+        if [ -f "tests/FamilyBudgetConsole_IntegrationTests" ]; then
+          ./tests/FamilyBudgetConsole_IntegrationTests --gtest_output=xml:integration_test_results.xml
+          TEST_RESULT=$?
+          echo "Integration tests exit code: $TEST_RESULT"
+        else
+          echo "ERROR: Integration test executable not found!"
+          exit 1
+        fi
+
+    - name: Generate Coverage Report
+      if: env.COVERAGE == 'true'
+      run: |
+        cd build
+        echo "Generating coverage report..."
+        
+        # 收集覆盖率数据
+        lcov --capture --directory . --output-file coverage.info --rc lcov_branch_coverage=1
+        
+        # 移除系统文件和非项目文件
+        lcov --remove coverage.info \
+          '/usr/*' \
+          '*/tests/*' \
+          '*/_deps/*' \
+          '*/googletest/*' \
+          --output-file coverage.info --rc lcov_branch_coverage=1
+        
+        # 生成HTML报告
+        genhtml coverage.info --output-directory coverage_report --branch-coverage
+        
+        # 打印覆盖率摘要
+        lcov --list coverage.info --rc lcov_branch_coverage=1
+        
+        echo "Coverage report generated in build/coverage_report/"
+        echo "Files in coverage_report directory:"
+        ls -la coverage_report/
+
+    - name: Upload Test Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-ubuntu
+        path: |
+          ${{ env.WORKING_DIR }}/build/unit_test_results.xml
+          ${{ env.WORKING_DIR }}/build/integration_test_results.xml
+          ${{ env.WORKING_DIR }}/build/coverage.info
+        retention-days: 7
+
+    - name: Upload Coverage Report
+      if: env.COVERAGE == 'true' && always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-ubuntu
+        path: ${{ env.WORKING_DIR }}/build/coverage_report/
+        retention-days: 14
+
+    - name: Upload Build Binaries
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-binaries-ubuntu
+        path: |
+          ${{ env.WORKING_DIR }}/build/bin/
+          ${{ env.WORKING_DIR }}/build/tests/
+        retention-days: 7
+
+  summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [build-and-test]
+    if: always()
+    
+    steps:
+    - name: Generate Summary
+      run: |
+        echo "### 🧪 家庭记账本系统测试报告" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        echo "#### 📊 测试状态" >> $GITHUB_STEP_SUMMARY
+        echo "- **构建与测试任务**: ${{ needs.build-and-test.result }}" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ needs.build-and-test.result }}" == "success" ]; then
+          echo "✅ **所有测试通过！**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **测试失败**" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "#### 🔧 构建信息" >> $GITHUB_STEP_SUMMARY
+        echo "- 构建类型: ${{ env.BUILD_TYPE }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 操作系统: Ubuntu" >> $GITHUB_STEP_SUMMARY
+        echo "- 工作目录: ${{ env.WORKING_DIR }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 覆盖率分析: ${{ env.COVERAGE }}" >> $GITHUB_STEP_SUMMARY
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "#### 📁 生成文件" >> $GITHUB_STEP_SUMMARY
+        echo "测试完成后生成的文件可以在 Artifacts 中下载：" >> $GITHUB_STEP_SUMMARY
+        echo "1. **test-results-ubuntu**: 测试结果XML文件" >> $GITHUB_STEP_SUMMARY
+        echo "2. **coverage-report-ubuntu**: 覆盖率HTML报告" >> $GITHUB_STEP_SUMMARY
+        echo "3. **build-binaries-ubuntu**: 编译生成的可执行文件" >> $GITHUB_STEP_SUMMARY
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "---" >> $GITHUB_STEP_SUMMARY
+        echo "*报告生成时间: $(date '+%Y-%m-%d %H:%M:%S %Z')*" >> $GITHUB_STEP_SUMMARY
+        echo "*工作流: ${{ github.workflow }}*" >> $GITHUB_STEP_SUMMARY
+        echo "*提交: ${{ github.sha }}*" >> $GITHUB_STEP_SUMMARY

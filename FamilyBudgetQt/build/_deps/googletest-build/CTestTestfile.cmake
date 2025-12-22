@@ -1,6 +1,6 @@
 # CMake generated Testfile for 
-# Source directory: E:/c++_work/FamilyBudgetQt/build/_deps/googletest-src
-# Build directory: E:/c++_work/FamilyBudgetQt/build/_deps/googletest-build
+# Source directory: E:/git/nju_SE/FamilyBudgetQt/build/_deps/googletest-src
+# Build directory: E:/git/nju_SE/FamilyBudgetQt/build/_deps/googletest-build
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.

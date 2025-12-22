@@ -1,8 +1,0 @@
-set(__QT_DEPLOY_TARGET_FamilyBudgetCore_FILE E:/c++_work/FamilyBudgetQt/build/libFamilyBudgetCore.a)
-set(__QT_DEPLOY_TARGET_FamilyBudgetCore_TYPE STATIC_LIBRARY)
-set(__QT_DEPLOY_TARGET_FamilyBudgetQt_FILE E:/c++_work/FamilyBudgetQt/build/bin/FamilyBudget.exe)
-set(__QT_DEPLOY_TARGET_FamilyBudgetQt_TYPE EXECUTABLE)
-set(__QT_DEPLOY_TARGET_FamilyBudgetQt_RUNTIME_DLLS C:/Qt/6.10.0/mingw_64/bin/Qt6Widgets.dll;C:/Qt/6.10.0/mingw_64/bin/Qt6Gui.dll;C:/Qt/6.10.0/mingw_64/bin/Qt6Core.dll)
-set(__QT_DEPLOY_TARGET_FamilyBudgetQt_Tests_FILE E:/c++_work/FamilyBudgetQt/build/tests/FamilyBudgetTests.exe)
-set(__QT_DEPLOY_TARGET_FamilyBudgetQt_Tests_TYPE EXECUTABLE)
-set(__QT_DEPLOY_TARGET_FamilyBudgetQt_Tests_RUNTIME_DLLS C:/msys64/mingw64/bin/libgtest_main.dll;C:/msys64/mingw64/bin/libgtest.dll)

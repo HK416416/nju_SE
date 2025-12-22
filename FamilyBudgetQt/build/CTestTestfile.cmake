@@ -1,8 +1,37 @@
 # CMake generated Testfile for 
-# Source directory: E:/c++_work/FamilyBudgetQt
-# Build directory: E:/c++_work/FamilyBudgetQt/build
+# Source directory: E:/git/nju_SE/FamilyBudgetQt
+# Build directory: E:/git/nju_SE/FamilyBudgetQt/build
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
-include("E:/c++_work/FamilyBudgetQt/build/FamilyBudgetConsole_Tests[1]_include.cmake")
+if(CTEST_CONFIGURATION_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+  add_test(FamilyBudgetConsole_UnitTests "E:/git/nju_SE/FamilyBudgetQt/build/tests/Debug/FamilyBudgetConsole_UnitTests.exe")
+  set_tests_properties(FamilyBudgetConsole_UnitTests PROPERTIES  _BACKTRACE_TRIPLES "E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;100;add_test;E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+  add_test(FamilyBudgetConsole_UnitTests "E:/git/nju_SE/FamilyBudgetQt/build/tests/Release/FamilyBudgetConsole_UnitTests.exe")
+  set_tests_properties(FamilyBudgetConsole_UnitTests PROPERTIES  _BACKTRACE_TRIPLES "E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;100;add_test;E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
+  add_test(FamilyBudgetConsole_UnitTests "E:/git/nju_SE/FamilyBudgetQt/build/tests/MinSizeRel/FamilyBudgetConsole_UnitTests.exe")
+  set_tests_properties(FamilyBudgetConsole_UnitTests PROPERTIES  _BACKTRACE_TRIPLES "E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;100;add_test;E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
+  add_test(FamilyBudgetConsole_UnitTests "E:/git/nju_SE/FamilyBudgetQt/build/tests/RelWithDebInfo/FamilyBudgetConsole_UnitTests.exe")
+  set_tests_properties(FamilyBudgetConsole_UnitTests PROPERTIES  _BACKTRACE_TRIPLES "E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;100;add_test;E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;0;")
+else()
+  add_test(FamilyBudgetConsole_UnitTests NOT_AVAILABLE)
+endif()
+if(CTEST_CONFIGURATION_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+  add_test(FamilyBudgetConsole_IntegrationTests "E:/git/nju_SE/FamilyBudgetQt/build/tests/Debug/FamilyBudgetConsole_IntegrationTests.exe")
+  set_tests_properties(FamilyBudgetConsole_IntegrationTests PROPERTIES  _BACKTRACE_TRIPLES "E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;101;add_test;E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+  add_test(FamilyBudgetConsole_IntegrationTests "E:/git/nju_SE/FamilyBudgetQt/build/tests/Release/FamilyBudgetConsole_IntegrationTests.exe")
+  set_tests_properties(FamilyBudgetConsole_IntegrationTests PROPERTIES  _BACKTRACE_TRIPLES "E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;101;add_test;E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
+  add_test(FamilyBudgetConsole_IntegrationTests "E:/git/nju_SE/FamilyBudgetQt/build/tests/MinSizeRel/FamilyBudgetConsole_IntegrationTests.exe")
+  set_tests_properties(FamilyBudgetConsole_IntegrationTests PROPERTIES  _BACKTRACE_TRIPLES "E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;101;add_test;E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
+  add_test(FamilyBudgetConsole_IntegrationTests "E:/git/nju_SE/FamilyBudgetQt/build/tests/RelWithDebInfo/FamilyBudgetConsole_IntegrationTests.exe")
+  set_tests_properties(FamilyBudgetConsole_IntegrationTests PROPERTIES  _BACKTRACE_TRIPLES "E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;101;add_test;E:/git/nju_SE/FamilyBudgetQt/CMakeLists.txt;0;")
+else()
+  add_test(FamilyBudgetConsole_IntegrationTests NOT_AVAILABLE)
+endif()
 subdirs("_deps/googletest-build")

@@ -1,78 +1,91 @@
 @echo off
-echo ========================================
-echo   FamilyBudgetQt 构建和测试脚本
-echo ========================================
+echo ==========================================
+echo   家庭记账本系统 - 构建与测试脚本
+echo ==========================================
 
-REM 设置环境变量
-set MSYS2_PATH=C:\msys64
-set PATH=%MSYS2_PATH%\mingw64\bin;%PATH%
-set PATH=C:\Qt\6.10.0\mingw_64\bin;%PATH%
-set PATH=C:\Program Files\CMake\bin;%PATH%
+REM 检查是否在正确的目录
+if not exist "CMakeLists.txt" (
+    echo 错误：请在项目根目录运行此脚本
+    pause
+    exit /b 1
+)
 
 REM 清理旧的构建
-echo 清理旧的构建文件...
-if exist build rmdir /s /q build
+if exist "build" (
+    echo 清理旧的构建文件...
+    rmdir /s /q build
+)
 
 REM 创建构建目录
 mkdir build
 cd build
 
-REM 配置 CMake
+REM 配置CMake
 echo.
-echo 配置 CMake...
-cmake .. -G "MinGW Makefiles" ^
-    -DCMAKE_BUILD_TYPE=Debug ^
-    -DENABLE_COVERAGE=ON
-
-if errorlevel 1 (
-    echo CMake 配置失败！
+echo 配置CMake...
+cmake .. -DBUILD_TESTS=ON
+if %ERRORLEVEL% neq 0 (
+    echo CMake配置失败
     pause
     exit /b 1
 )
 
-REM 构建项目
+REM 编译项目
 echo.
-echo 构建项目...
+echo 编译项目...
 cmake --build . --config Debug
-
-if errorlevel 1 (
-    echo 构建失败！
+if %ERRORLEVEL% neq 0 (
+    echo 编译失败
     pause
     exit /b 1
 )
 
-REM 运行测试
+REM 运行单元测试
 echo.
 echo 运行单元测试...
-cd tests
-.\FamilyBudgetTests.exe --gtest_output=xml:test_results.xml
+if exist "tests\Debug\FamilyBudgetConsole_UnitTests.exe" (
+    cd tests\Debug
+    FamilyBudgetConsole_UnitTests.exe
+    if %ERRORLEVEL% neq 0 (
+        echo 单元测试失败
+        pause
+        exit /b 1
+    )
+    cd ..\..
+) else (
+    echo 警告：未找到单元测试可执行文件
+)
 
-if errorlevel 1 (
-    echo 测试失败！
-    pause
-    exit /b 1
+REM 运行集成测试
+echo.
+echo 运行集成测试...
+if exist "tests\Debug\FamilyBudgetConsole_IntegrationTests.exe" (
+    cd tests\Debug
+    FamilyBudgetConsole_IntegrationTests.exe
+    if %ERRORLEVEL% neq 0 (
+        echo 集成测试失败
+        pause
+        exit /b 1
+    )
+    cd ..\..
+) else (
+    echo 警告：未找到集成测试可执行文件
+)
+
+REM 运行主程序（演示）
+echo.
+echo 运行主程序演示...
+if exist "bin\Debug\FamilyBudgetConsole.exe" (
+    echo 输入 "help" 查看可用命令
+    echo 输入 "exit" 退出程序
+    echo.
+    bin\Debug\FamilyBudgetConsole.exe
+) else (
+    echo 警告：未找到主程序可执行文件
 )
 
 echo.
-echo ========================================
-echo   所有测试通过！
-echo ========================================
-
-REM 打开测试报告（如果有）
-if exist test_results.xml (
-    echo 测试报告已生成: build/tests/test_results.xml
-)
-
-REM 生成覆盖率报告
-echo.
-echo 生成覆盖率报告...
-cd ..
-if exist coverage (
-    lcov --directory . --capture --output-file coverage.info
-    lcov --remove coverage.info '*/usr/*' '*/tests/*' '*/googletest/*' --output-file coverage.filtered
-    genhtml coverage.filtered --output-directory coverage_report
-    echo 覆盖率报告已生成: build/coverage_report/index.html
-    start coverage_report/index.html
-)
-
+echo ==========================================
+echo   构建与测试完成
+echo ==========================================
 pause

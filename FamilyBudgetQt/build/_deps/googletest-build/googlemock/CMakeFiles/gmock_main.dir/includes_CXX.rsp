@@ -1,1 +1,0 @@
--isystem "E:/c++_work/FamilyBudgetQt/build/_deps/googletest-src/googlemock/include" -isystem "E:/c++_work/FamilyBudgetQt/build/_deps/googletest-src/googlemock" -isystem "E:/c++_work/FamilyBudgetQt/build/_deps/googletest-src/googletest/include" -isystem "E:/c++_work/FamilyBudgetQt/build/_deps/googletest-src/googletest"

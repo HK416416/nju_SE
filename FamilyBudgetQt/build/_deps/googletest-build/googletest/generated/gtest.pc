@@ -1,5 +1,5 @@
-libdir=C:/Program Files (x86)/FamilyBudgetQt/lib
-includedir=C:/Program Files (x86)/FamilyBudgetQt/include
+libdir=C:/Program Files (x86)/FamilyBudgetConsole/lib
+includedir=C:/Program Files (x86)/FamilyBudgetConsole/include
 
 Name: gtest
 Description: GoogleTest (without main() function)
