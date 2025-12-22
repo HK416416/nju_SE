@@ -44,7 +44,7 @@ jobs:
           libgmock-dev
         echo "Dependencies installed successfully"
 
-    # 🔥 关键：彻底清除所有可能的 gcov 残留文件（项目级清理）
+    #  关键：彻底清除所有可能的 gcov 残留文件（项目级清理）
     - name: Clean All GCOV Artifacts and Build Directory
       run: |
         find . -name "*.gcda" -delete
@@ -70,29 +70,29 @@ jobs:
       run: |
         cd build
         if [ ! -f "tests/FamilyBudgetConsole_UnitTests" ]; then
-          echo "❌ Unit test executable not found!"
+          echo " Unit test executable not found!"
           exit 1
         fi
         ./tests/FamilyBudgetConsole_UnitTests --gtest_output=xml:unit_test_results.xml
         if [ $? -ne 0 ]; then
-          echo "❌ Unit tests failed!"
+          echo " Unit tests failed!"
           exit 1
         fi
-        echo "✅ Unit tests passed"
+        echo " Unit tests passed"
 
     - name: Run Integration Tests
       run: |
         cd build
         if [ ! -f "tests/FamilyBudgetConsole_IntegrationTests" ]; then
-          echo "❌ Integration test executable not found!"
+          echo " Integration test executable not found!"
           exit 1
         fi
         ./tests/FamilyBudgetConsole_IntegrationTests --gtest_output=xml:integration_test_results.xml
         if [ $? -ne 0 ]; then
-          echo "❌ Integration tests failed!"
+          echo " Integration tests failed!"
           exit 1
         fi
-        echo "✅ Integration tests passed"
+        echo " Integration tests passed"
 
     - name: Generate Coverage Report
       if: env.COVERAGE == 'true'
@@ -147,27 +147,27 @@ jobs:
     steps:
     - name: Generate Summary
       run: |
-        echo "### 🧪 家庭记账本系统测试报告" >> $GITHUB_STEP_SUMMARY
+        echo "###  家庭记账本系统测试报告" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
-        echo "#### 📊 测试状态" >> $GITHUB_STEP_SUMMARY
+        echo "####  测试状态" >> $GITHUB_STEP_SUMMARY
         echo "- **构建与测试任务**: ${{ needs.build-and-test.result }}" >> $GITHUB_STEP_SUMMARY
         
         if [ "${{ needs.build-and-test.result }}" == "success" ]; then
-          echo "✅ **所有测试通过！**" >> $GITHUB_STEP_SUMMARY
+          echo " **所有测试通过！**" >> $GITHUB_STEP_SUMMARY
         else
-          echo "❌ **测试失败，请检查日志和测试结果。**" >> $GITHUB_STEP_SUMMARY
+          echo " **测试失败，请检查日志和测试结果。**" >> $GITHUB_STEP_SUMMARY
         fi
         
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "#### 🔧 构建信息" >> $GITHUB_STEP_SUMMARY
+        echo "####  构建信息" >> $GITHUB_STEP_SUMMARY
         echo "- 构建类型: ${{ env.BUILD_TYPE }}" >> $GITHUB_STEP_SUMMARY
         echo "- 操作系统: Ubuntu" >> $GITHUB_STEP_SUMMARY
         echo "- 工作目录: ${{ env.WORKING_DIR }}" >> $GITHUB_STEP_SUMMARY
         echo "- 覆盖率分析: ${{ env.COVERAGE }}" >> $GITHUB_STEP_SUMMARY
         
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "#### 📁 生成文件" >> $GITHUB_STEP_SUMMARY
+        echo "####  生成文件" >> $GITHUB_STEP_SUMMARY
         echo "测试完成后生成的文件可在 **Artifacts → ci-artifacts-ubuntu** 中下载：" >> $GITHUB_STEP_SUMMARY
         echo "- 测试结果 XML" >> $GITHUB_STEP_SUMMARY
         echo "- 覆盖率报告（HTML）" >> $GITHUB_STEP_SUMMARY
