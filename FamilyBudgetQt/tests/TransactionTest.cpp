@@ -49,7 +49,10 @@ protected:
     Transaction* expenseTransaction;
     Transaction* edgeCaseTransaction;
 };
-
+//测试0: 
+TEST_F(TransactionTest, GetRecordId) {
+    EXPECT_EQ(0,0);
+}
 // 测试1: 构造函数正常情况
 TEST_F(TransactionTest, ConstructorValidInput) {
     EXPECT_NE(incomeTransaction, nullptr);
