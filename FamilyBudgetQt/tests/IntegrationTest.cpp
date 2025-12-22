@@ -83,12 +83,12 @@ TEST(IntegrationTest, FinancialOverview) {
     EXPECT_EQ(manager.getTransactionCount(), 3);
 }
 
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
+// int main(int argc, char **argv) {
+//     ::testing::InitGoogleTest(&argc, argv);
     
-    std::cout << "==========================================" << std::endl;
-    std::cout << "  家庭记账本系统 - 集成测试" << std::endl;
-    std::cout << "==========================================" << std::endl;
+//     std::cout << "==========================================" << std::endl;
+//     std::cout << "  家庭记账本系统 - 集成测试" << std::endl;
+//     std::cout << "==========================================" << std::endl;
     
-    return RUN_ALL_TESTS();
-}
+//     return RUN_ALL_TESTS();
+// }
