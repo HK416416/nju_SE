@@ -50,7 +50,7 @@ protected:
     Transaction* edgeCaseTransaction;
 };
 //测试0: 
-TEST_F(TransactionTest, GetRecordId) {
+TEST_F(TransactionTest, DummyTest) {
     EXPECT_EQ(0,0);
 }
 // 测试1: 构造函数正常情况
