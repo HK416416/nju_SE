@@ -14,7 +14,7 @@ on:
 env:
   BUILD_TYPE: Debug
   COVERAGE: true
-  WORKING_DIR: FamilyBudgetQt  # 重要：设置工作目录
+  WORKING_DIR: FamilyBudgetQt
 
 jobs:
   build-and-test:
@@ -32,15 +32,6 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-    - name: Print Environment Information
-      run: |
-        echo "Running on: ${{ runner.os }}"
-        echo "Working directory: $(pwd)"
-        echo "Project directory: ${{ env.WORKING_DIR }}"
-        gcc --version
-        cmake --version
-        make --version
-
     - name: Install Dependencies
       run: |
         sudo apt-get update
@@ -53,9 +44,14 @@ jobs:
           libgmock-dev
         echo "Dependencies installed successfully"
 
+    # 🔥 关键：彻底清理旧构建目录，避免 gcno/gcda 与源码不一致
+    - name: Clean Build Directory
+      run: |
+        rm -rf build/
+        mkdir build
+
     - name: Configure CMake
       run: |
-        mkdir -p build
         cd build
         cmake .. \
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
@@ -67,88 +63,73 @@ jobs:
         cd build
         make -j$(nproc) VERBOSE=1
         echo "Build completed successfully"
-        echo "Build contents:"
-        ls -la bin/ || true
-        ls -la tests/ || true
 
     - name: Run Unit Tests
       run: |
         cd build
-        echo "Running unit tests..."
-        if [ -f "tests/FamilyBudgetConsole_UnitTests" ]; then
-          ./tests/FamilyBudgetConsole_UnitTests --gtest_output=xml:unit_test_results.xml
-          TEST_RESULT=$?
-          echo "Unit tests exit code: $TEST_RESULT"
-        else
-          echo "ERROR: Unit test executable not found!"
+        if [ ! -f "tests/FamilyBudgetConsole_UnitTests" ]; then
+          echo "❌ Unit test executable not found!"
           exit 1
         fi
+        ./tests/FamilyBudgetConsole_UnitTests --gtest_output=xml:unit_test_results.xml
+        if [ $? -ne 0 ]; then
+          echo "❌ Unit tests failed!"
+          exit 1
+        fi
+        echo "✅ Unit tests passed"
 
     - name: Run Integration Tests
       run: |
         cd build
-        echo "Running integration tests..."
-        if [ -f "tests/FamilyBudgetConsole_IntegrationTests" ]; then
-          ./tests/FamilyBudgetConsole_IntegrationTests --gtest_output=xml:integration_test_results.xml
-          TEST_RESULT=$?
-          echo "Integration tests exit code: $TEST_RESULT"
-        else
-          echo "ERROR: Integration test executable not found!"
+        if [ ! -f "tests/FamilyBudgetConsole_IntegrationTests" ]; then
+          echo "❌ Integration test executable not found!"
           exit 1
         fi
+        ./tests/FamilyBudgetConsole_IntegrationTests --gtest_output=xml:integration_test_results.xml
+        if [ $? -ne 0 ]; then
+          echo "❌ Integration tests failed!"
+          exit 1
+        fi
+        echo "✅ Integration tests passed"
 
     - name: Generate Coverage Report
       if: env.COVERAGE == 'true'
       run: |
         cd build
         echo "Generating coverage report..."
-        
-        # 收集覆盖率数据
+
+        # 捕获原始覆盖率数据
         lcov --capture --directory . --output-file coverage.info --rc lcov_branch_coverage=1
-        
-        # 移除系统文件和非项目文件
+
+        # 过滤掉系统头文件、测试代码、依赖库等非业务代码
         lcov --remove coverage.info \
           '/usr/*' \
+          '/opt/*' \
           '*/tests/*' \
           '*/_deps/*' \
           '*/googletest/*' \
-          --output-file coverage.info --rc lcov_branch_coverage=1
-        
-        # 生成HTML报告
-        genhtml coverage.info --output-directory coverage_report --branch-coverage
-        
-        # 打印覆盖率摘要
-        lcov --list coverage.info --rc lcov_branch_coverage=1
-        
-        echo "Coverage report generated in build/coverage_report/"
-        echo "Files in coverage_report directory:"
-        ls -la coverage_report/
+          '*/CMakeFiles/*' \
+          '*/main.cpp' \
+          --output-file coverage_filtered.info --rc lcov_branch_coverage=1
 
-    - name: Upload Test Artifacts
+        # 生成 HTML 可视化报告
+        genhtml coverage_filtered.info --output-directory coverage_report --branch-coverage
+
+        # 打印覆盖率摘要
+        lcov --list coverage_filtered.info --rc lcov_branch_coverage=1
+
+        echo "Coverage report generated in build/coverage_report/"
+
+    - name: Upload Artifacts
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-ubuntu
+        name: ci-artifacts-ubuntu
         path: |
           ${{ env.WORKING_DIR }}/build/unit_test_results.xml
           ${{ env.WORKING_DIR }}/build/integration_test_results.xml
-          ${{ env.WORKING_DIR }}/build/coverage.info
-        retention-days: 7
-
-    - name: Upload Coverage Report
-      if: env.COVERAGE == 'true' && always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report-ubuntu
-        path: ${{ env.WORKING_DIR }}/build/coverage_report/
-        retention-days: 14
-
-    - name: Upload Build Binaries
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-binaries-ubuntu
-        path: |
+          ${{ env.WORKING_DIR }}/build/coverage_filtered.info
+          ${{ env.WORKING_DIR }}/build/coverage_report/
           ${{ env.WORKING_DIR }}/build/bin/
           ${{ env.WORKING_DIR }}/build/tests/
         retention-days: 7
@@ -171,7 +152,7 @@ jobs:
         if [ "${{ needs.build-and-test.result }}" == "success" ]; then
           echo "✅ **所有测试通过！**" >> $GITHUB_STEP_SUMMARY
         else
-          echo "❌ **测试失败**" >> $GITHUB_STEP_SUMMARY
+          echo "❌ **测试失败，请检查日志和测试结果。**" >> $GITHUB_STEP_SUMMARY
         fi
         
         echo "" >> $GITHUB_STEP_SUMMARY
@@ -183,10 +164,11 @@ jobs:
         
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "#### 📁 生成文件" >> $GITHUB_STEP_SUMMARY
-        echo "测试完成后生成的文件可以在 Artifacts 中下载：" >> $GITHUB_STEP_SUMMARY
-        echo "1. **test-results-ubuntu**: 测试结果XML文件" >> $GITHUB_STEP_SUMMARY
-        echo "2. **coverage-report-ubuntu**: 覆盖率HTML报告" >> $GITHUB_STEP_SUMMARY
-        echo "3. **build-binaries-ubuntu**: 编译生成的可执行文件" >> $GITHUB_STEP_SUMMARY
+        echo "测试完成后生成的文件可以在 **Artifacts** 中下载：" >> $GITHUB_STEP_SUMMARY
+        echo "1. **ci-artifacts-ubuntu**:" >> $GITHUB_STEP_SUMMARY
+        echo "   - 测试结果 XML 文件" >> $GITHUB_STEP_SUMMARY
+        echo "   - 覆盖率报告（HTML + info）" >> $GITHUB_STEP_SUMMARY
+        echo "   - 可执行二进制文件（bin/ 和 tests/）" >> $GITHUB_STEP_SUMMARY
         
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "---" >> $GITHUB_STEP_SUMMARY
