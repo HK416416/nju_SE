@@ -83,7 +83,8 @@ if(BUILD_TESTS)
         src/LedgerManager.cpp
         src/AlertService.cpp
         src/SampleDataGenerator.cpp
-        #main.cpp  # 
+        #main.cpp  # 包含主程序逻辑
+    )
     
     target_include_directories(${PROJECT_NAME}_IntegrationTests PRIVATE include)
     target_link_libraries(${PROJECT_NAME}_IntegrationTests 
