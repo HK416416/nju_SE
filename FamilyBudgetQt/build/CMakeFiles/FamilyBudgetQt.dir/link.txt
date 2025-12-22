@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\FamilyBudgetQt.dir/objects.a
+C:\Qt\Tools\mingw1310_64\bin\ar.exe qc CMakeFiles\FamilyBudgetQt.dir/objects.a @CMakeFiles\FamilyBudgetQt.dir\objects1.rsp
+C:\Qt\Tools\mingw1310_64\bin\g++.exe -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -mwindows -Wl,--whole-archive CMakeFiles\FamilyBudgetQt.dir/objects.a -Wl,--no-whole-archive -o bin\FamilyBudget.exe -Wl,--out-implib,libFamilyBudget.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\FamilyBudgetQt.dir\linkLibs.rsp

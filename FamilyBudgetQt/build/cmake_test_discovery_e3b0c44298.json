@@ -1,0 +1,57 @@
+{
+  "tests": 9,
+  "name": "AllTests",
+  "testsuites": [
+    {
+      "name": "IntegrationTest",
+      "tests": 9,
+      "testsuite": [
+        {
+          "name": "TransactionBudgetIntegration",
+          "file": "E:\\c++_work\\FamilyBudgetQt\\tests\\IntegrationTest.cpp",
+          "line": 30
+        },
+        {
+          "name": "MultipleBudgetCategories",
+          "file": "E:\\c++_work\\FamilyBudgetQt\\tests\\IntegrationTest.cpp",
+          "line": 75
+        },
+        {
+          "name": "CompleteAccountingWorkflow",
+          "file": "E:\\c++_work\\FamilyBudgetQt\\tests\\IntegrationTest.cpp",
+          "line": 129
+        },
+        {
+          "name": "DataImportExportIntegration",
+          "file": "E:\\c++_work\\FamilyBudgetQt\\tests\\IntegrationTest.cpp",
+          "line": 222
+        },
+        {
+          "name": "BoundaryConditions",
+          "file": "E:\\c++_work\\FamilyBudgetQt\\tests\\IntegrationTest.cpp",
+          "line": 268
+        },
+        {
+          "name": "ConcurrencyIntegration",
+          "file": "E:\\c++_work\\FamilyBudgetQt\\tests\\IntegrationTest.cpp",
+          "line": 308
+        },
+        {
+          "name": "ErrorRecoveryIntegration",
+          "file": "E:\\c++_work\\FamilyBudgetQt\\tests\\IntegrationTest.cpp",
+          "line": 340
+        },
+        {
+          "name": "PerformanceIntegration",
+          "file": "E:\\c++_work\\FamilyBudgetQt\\tests\\IntegrationTest.cpp",
+          "line": 387
+        },
+        {
+          "name": "UserScenarioSimulation",
+          "file": "E:\\c++_work\\FamilyBudgetQt\\tests\\IntegrationTest.cpp",
+          "line": 450
+        }
+      ]
+    }
+  ]
+}

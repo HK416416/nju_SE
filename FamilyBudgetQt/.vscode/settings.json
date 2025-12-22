@@ -1,0 +1,27 @@
+{
+    "cmake.configureSettings": {
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.10.0/mingw_64/lib/cmake"
+    },
+    "cmake.generator": "MinGW Makefiles",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "files.associations": {
+        "*.h": "cpp",
+        "*.cpp": "cpp",
+        "qwidget.h": "cpp",
+        "qmainwindow.h": "cpp",
+        "qpushbutton.h": "cpp",
+        "qtabwidget.h": "cpp",
+        "qtablewidget.h": "cpp",
+        "qlistwidget.h": "cpp",
+        "qlabel.h": "cpp",
+        "qcombobox.h": "cpp",
+        "qlineedit.h": "cpp",
+        "qdialog.h": "cpp",
+        "qmessagebox.h": "cpp",
+        "qapplication.h": "cpp",
+        "qfont.h": "cpp",
+        "qdatetime.h": "cpp"
+    },
+    "qtConfigure.qtKitDir": "C:/Qt/6.10.0/mingw_64"
+}
